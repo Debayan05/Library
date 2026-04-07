@@ -13,6 +13,7 @@
         .glass-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.85); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .status-badge { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.05em; }
         .admin-tab.active { background: #2563eb; color: white; }
+        .book-cover { height: 280px; width: 100%; object-fit: cover; border-radius: 1.5rem 1.5rem 0 0; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -54,12 +55,12 @@
                     <option value="">All Books</option>
                     <option value="Read">Already Read</option>
                     <option value="Unread">To-Read List</option>
+                    <option value="In Progress">In Progress</option>
                 </select>
             </div>
         </div>
 
-        <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            </div>
+        <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
     </main>
 
     <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6 z-[100]">
@@ -90,25 +91,90 @@
             <div id="contentFind" class="overflow-y-auto pr-2 custom-scroll flex-grow">
                 <div class="relative mb-6">
                     <i class="fa-solid fa-search absolute left-4 top-4 text-gray-400"></i>
-                    <input type="text" id="adminSearchInput" oninput="applyAdminSearch()" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 outline-none border-2 border-transparent focus:border-blue-500" placeholder="Search to modify or delete...">
+                    <input type="text" id="adminSearchInput" oninput="applyAdminSearch()" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 outline-none border-2 border-transparent focus:border-blue-500" placeholder="Search title or author...">
                 </div>
-                <div id="adminBookList" class="space-y-3">
-                    </div>
+                <div id="adminBookList" class="space-y-3"></div>
             </div>
 
             <div id="contentAdd" class="hidden overflow-y-auto pr-2 flex-grow">
                 <form id="bookForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <input type="text" id="newTitle" placeholder="Book Title" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
                     <input type="text" id="newAuthor" placeholder="Author Name" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
-                    <input type="text" id="newLang" placeholder="Language" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
-                    <input type="text" id="newGenre" placeholder="Genre" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
-                    <select id="newStatus" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                        <option value="Unread">Status: Unread</option>
-                        <option value="Read">Status: Read</option>
+                    
+                    <select id="newLang" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="" disabled selected>Select Language</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
                     </select>
+
+                    <select id="newType" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="Novel / Collection">Novel / Collection</option>
+                        <option value="Story / Collection">Story / Collection</option>
+                        <option value="Poetry">Poetry</option>
+                        <option value="Magazine">Magazine</option>
+                        <option value="Textbook">Textbook</option>
+                        <option value="Comic / Graphic Novel">Comic / Graphic Novel</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Religious / Mythology">Religious / Mythology</option>
+                    </select>
+
+                    <select id="newGenre" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="" disabled selected>Select Genre</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Mystery / Thriller">Mystery / Thriller</option>
+                        <option value="Horror / Paranormal">Horror / Paranormal</option>
+                        <option value="Science Fiction">Science Fiction</option>
+                        <option value="Historical Fiction">Historical Fiction</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Classics">Classics</option>
+                        <option value="Education">Education</option>
+                        <option value="Others">Others</option>
+                    </select>
+
+                    <select id="newPublisher" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="" disabled selected>Select Publisher</option>
+                        <option value="Ananda">Ananda</option>
+                        <option value="Patra Bharati">Patra Bharati</option>
+                        <option value="Deb Shatiyta Kutir">Deb Shatiyta Kutir</option>
+                        <option value="Deys Publishing">Deys Publishing</option>
+                        <option value="Mitra and Ghosh">Mitra and Ghosh</option>
+                        <option value="Biva">Biva</option>
+                        <option value="Book Farm">Book Farm</option>
+                        <option value="Book Look">Book Look</option>
+                        <option value="Cafe Table">Cafe Table</option>
+                        <option value="Briti">Briti</option>
+                        <option value="Deep Prakashan">Deep Prakashan</option>
+                        <option value="Sahitya Academy">Sahitya Academy</option>
+                        <option value="Abhijan Publishers">Abhijan Publishers</option>
+                        <option value="Kalpabiswa">Kalpabiswa</option>
+                        <option value="Antareep">Antareep</option>
+                        <option value="Boibhashik">Boibhashik</option>
+                        <option value="Shopizen Bangla">Shopizen Bangla</option>
+                        <option value="Sayantan Publishers">Sayantan Publishers</option>
+                        <option value="Smells of Book">Smells of Book</option>
+                        <option value="Rupa">Rupa</option>
+                        <option value="Penguin">Penguin</option>
+                        <option value="Latika">Latika</option>
+                        <option value="Narayan">Narayan</option>
+                        <option value="Patit Paban">Patit Paban</option>
+                        <option value="Aranyamon">Aranyamon</option>
+                        <option value="Others">Others</option>
+                    </select>
+
+                    <select id="newStatus" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="Unread">Unread</option>
+                        <option value="Read">Read</option>
+                        <option value="In Progress">In Progress</option>
+                    </select>
+                    
                     <input type="number" id="newRating" placeholder="Rating (1-5)" min="1" max="5" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
                     <input type="text" id="newLoc" placeholder="Location / Lent to..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2">
-                    <textarea id="newComment" placeholder="Comments..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2 h-24"></textarea>
+                    <input type="text" id="newCover" placeholder="Cover Image Link (Drive/Web)" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2">
+                    <textarea id="newComment" placeholder="Comments..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2 h-20"></textarea>
+                    
                     <button type="submit" id="submitBtn" class="md:col-span-2 bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 shadow-xl">POST TO DATABASE</button>
                     <button type="button" onclick="resetForm()" id="cancelEditBtn" class="hidden md:col-span-2 text-red-500 font-bold uppercase text-xs">Cancel Editing & Add New Instead</button>
                 </form>
@@ -118,13 +184,22 @@
 
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNb6adZTCJeJrx1uCahjkREth8JWjTYjX1hzZWV-tbTvC4LFY-IDwlM3ozFm3RJjEIF7pdSYXQgq7j/pub?gid=0&single=true&output=csv'; 
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxCqS-EGdINZnip7C0c3oKwWmAotXKQNA2sf_UGnyK1BkhSnbSYJwXuvNctT4Q3SeHlw/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyz2sLBMR-rHeCz4wMqAFrKE33jeC1IL66PoarvlYDZFXnapo-V03kPVMs-G9BUS-a4gA/exec';
         const ADMIN_PASSWORD = '1234';
 
         let libraryData = [];
         let currentEditIndex = null;
 
         window.onload = fetchData;
+
+        function fixImageUrl(url) {
+            if (!url) return 'https://via.placeholder.com/300x450?text=No+Cover';
+            if (url.includes('drive.google.com')) {
+                const id = url.split('/d/')[1]?.split('/')[0];
+                return `https://docs.google.com/uc?id=${id}&export=download`;
+            }
+            return url;
+        }
 
         function fetchData() {
             Papa.parse(SHEET_CSV_URL, {
@@ -146,22 +221,31 @@
             document.getElementById('bookCount').innerText = `${books.length} Books in Collection`;
             grid.innerHTML = books.map(book => {
                 const isRead = book.Status === 'Read';
+                const isInProgress = book.Status === 'In Progress';
                 const stars = '★'.repeat(Number(book.Rating) || 0) + '☆'.repeat(5 - (Number(book.Rating) || 0));
+                
+                let badgeClass = 'bg-orange-100 text-orange-600';
+                if (isRead) badgeClass = 'bg-green-100 text-green-600';
+                if (isInProgress) badgeClass = 'bg-blue-100 text-blue-600';
+
                 return `
-                    <div class="glass-card rounded-[2rem] p-7 flex flex-col relative overflow-hidden">
-                        <div class="flex justify-between items-start mb-5">
-                            <span class="status-badge px-3 py-1 rounded-full uppercase ${isRead ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${book.Status || 'Unread'}</span>
-                            <span class="text-[10px] font-black text-gray-300 uppercase">${book.Language || ''}</span>
-                        </div>
-                        <h3 class="font-black text-xl text-gray-800 leading-tight mb-1">${book.Title}</h3>
-                        <p class="text-sm font-semibold text-gray-400 mb-6 italic">by ${book.Author || 'Unknown'}</p>
-                        <div class="mt-auto">
-                            <div class="flex items-center gap-2 text-xs font-bold text-red-500 bg-red-50 p-2 rounded-xl inline-flex mb-4">
-                                <i class="fa-solid fa-location-dot"></i> ${book.Location || 'Shelf'}
+                    <div class="glass-card rounded-[2rem] flex flex-col relative overflow-hidden">
+                        <img src="${fixImageUrl(book.CoverImage)}" class="book-cover" alt="${book.Title}">
+                        <div class="p-7 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="status-badge px-3 py-1 rounded-full uppercase ${badgeClass}">${book.Status || 'Unread'}</span>
+                                <span class="text-[10px] font-black text-gray-300 uppercase">${book.Language || ''}</span>
                             </div>
-                            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
-                                <span class="text-yellow-400 text-sm tracking-widest">${stars}</span>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase">${book.Genre || 'General'}</span>
+                            <h3 class="font-black text-xl text-gray-800 leading-tight mb-1">${book.Title}</h3>
+                            <p class="text-sm font-semibold text-gray-400 mb-4 italic">by ${book.Author || 'Unknown'}</p>
+                            <div class="mt-auto">
+                                <div class="flex items-center gap-2 text-xs font-bold text-red-500 bg-red-50 p-2 rounded-xl inline-flex mb-4">
+                                    <i class="fa-solid fa-location-dot"></i> ${book.Location || 'Shelf'}
+                                </div>
+                                <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                                    <span class="text-yellow-400 text-sm tracking-widest">${stars}</span>
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase">${book.Genre || 'General'}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -199,7 +283,7 @@
                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all group">
                     <div>
                         <p class="font-black text-gray-800 leading-none mb-1">${book.Title}</p>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">${book.Author}</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">${book.Author} | ${book.Type || 'Book'}</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="startModify(${index})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase hover:bg-blue-600 hover:text-white transition-all">Modify</button>
@@ -222,11 +306,14 @@
             document.getElementById('newTitle').value = book.Title;
             document.getElementById('newAuthor').value = book.Author;
             document.getElementById('newLang').value = book.Language;
+            document.getElementById('newType').value = book.Type || "";
             document.getElementById('newGenre').value = book.Genre;
+            document.getElementById('newPublisher').value = book.Publisher || "";
             document.getElementById('newStatus').value = book.Status;
             document.getElementById('newRating').value = book.Rating;
             document.getElementById('newLoc').value = book.Location;
             document.getElementById('newComment').value = book.Comments;
+            document.getElementById('newCover').value = book.CoverImage || "";
 
             document.getElementById('submitBtn').innerText = "UPDATE BOOK IN DATABASE";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
@@ -242,7 +329,6 @@
 
         async function handleDelete(index) {
             if (!confirm(`Are you sure you want to permanently delete "${libraryData[index].Title}"?`)) return;
-            
             await submitToGS({ action: "delete", rowIndex: index });
         }
 
@@ -256,13 +342,14 @@
                 title: document.getElementById('newTitle').value,
                 author: document.getElementById('newAuthor').value,
                 language: document.getElementById('newLang').value,
+                type: document.getElementById('newType').value,
                 genre: document.getElementById('newGenre').value,
-                type: "Book",
-                publisher: "Admin Panel",
+                publisher: document.getElementById('newPublisher').value,
                 status: document.getElementById('newStatus').value,
                 rating: document.getElementById('newRating').value,
                 comments: document.getElementById('newComment').value,
-                location: document.getElementById('newLoc').value
+                location: document.getElementById('newLoc').value,
+                coverImage: document.getElementById('newCover').value
             };
 
             await submitToGS(payload);
@@ -285,7 +372,6 @@
             }
         }
 
-        // --- PUBLIC HELPERS ---
         function populateFilters() {
             const getUnique = (key) => ['All', ...new Set(libraryData.map(b => b[key]).filter(v => v))];
             const fill = (id, items) => {
