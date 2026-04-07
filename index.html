@@ -3,32 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ria's Digital Library</title>
+    <title>Ria's Digital Library | Admin Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .glass-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
+        body { background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%); min-height: 100vh; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .glass-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.85); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .status-badge { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.05em; }
-        .loader-dots div { animation: blink 1.4s infinite both; }
-        .loader-dots div:nth-child(2) { animation-delay: 0.2s; }
-        .loader-dots div:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
+        .admin-tab.active { background: #2563eb; color: white; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -44,7 +28,7 @@
         <div class="flex items-center gap-4">
             <span id="bookCount" class="hidden md:block bg-black/20 px-4 py-2 rounded-full text-xs font-bold border border-white/20">Loading...</span>
             <button onclick="openAdmin()" class="group relative">
-                <img src="https://ui-avatars.com/api/?name=Debayan+Ganguly&background=fff&color=2563eb" class="w-12 h-12 rounded-2xl border-2 border-white shadow-lg group-hover:rotate-6 transition-transform" alt="Admin">
+                <img src="https://ui-avatars.com/api/?name=Debayan+Ganguly&background=fff&color=2563eb" class="w-12 h-12 rounded-2xl border-2 border-white shadow-lg group-hover:rotate-6 transition-transform">
                 <div class="absolute -top-1 -right-1 bg-green-400 w-4 h-4 rounded-full border-2 border-blue-600"></div>
             </button>
         </div>
@@ -54,22 +38,19 @@
         <div class="glass-card rounded-[2.5rem] p-8 mb-12 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
             <div class="md:col-span-1">
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Quick Search</label>
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="searchInput" oninput="applyFilters()" class="w-full pl-12 pr-4 py-3 rounded-2xl bg-white/50 border-none focus:ring-2 focus:ring-blue-500 outline-none shadow-inner" placeholder="Title, author...">
-                </div>
+                <input type="text" id="searchInput" oninput="applyFilters()" class="w-full px-4 py-3 rounded-2xl bg-white/50 border-none focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Title, author...">
             </div>
             <div>
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Language</label>
-                <select id="langFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700"></select>
+                <select id="langFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none focus:ring-2 focus:ring-blue-500"></select>
             </div>
             <div>
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Genre</label>
-                <select id="genreFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700"></select>
+                <select id="genreFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none focus:ring-2 focus:ring-blue-500"></select>
             </div>
             <div>
                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Read Status</label>
-                <select id="statusFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700">
+                <select id="statusFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Books</option>
                     <option value="Read">Already Read</option>
                     <option value="Unread">To-Read List</option>
@@ -78,107 +59,86 @@
         </div>
 
         <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="col-span-full flex flex-col items-center py-20 text-blue-600">
-                <div class="loader-dots flex gap-2 mb-4">
-                    <div class="w-3 h-3 bg-current rounded-full"></div>
-                    <div class="w-3 h-3 bg-current rounded-full"></div>
-                    <div class="w-3 h-3 bg-current rounded-full"></div>
-                </div>
-                <p class="font-bold uppercase tracking-widest text-xs">Syncing with Google Sheets...</p>
             </div>
-        </div>
     </main>
 
     <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6 z-[100]">
+        
         <div id="loginBox" class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl text-center">
             <i class="fa-solid fa-shield-halved text-5xl text-blue-600 mb-6"></i>
             <h2 class="text-2xl font-black mb-2 uppercase tracking-tighter">Admin Access</h2>
-            <p class="text-gray-400 text-sm mb-8 font-medium">Verify your identity to add books</p>
             <input type="password" id="adminPass" placeholder="Enter Password" class="w-full p-4 rounded-2xl border-2 border-gray-100 mb-4 focus:border-blue-500 outline-none text-center font-bold tracking-widest">
-            <button onclick="verifyLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 transition-all shadow-lg">LOGIN</button>
-            <button onclick="closeModal()" class="mt-4 text-gray-400 text-xs font-bold hover:text-red-500 uppercase">Cancel</button>
+            <button onclick="verifyLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg">LOGIN</button>
+            <button onclick="closeModal()" class="mt-4 text-gray-400 text-xs font-bold uppercase">Cancel</button>
         </div>
 
-        <div id="addBookBox" class="bg-white rounded-[2.5rem] p-8 w-full max-w-2xl shadow-2xl hidden max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-black uppercase tracking-tighter">Add to Collection</h2>
+        <div id="adminDashboard" class="bg-white rounded-[2.5rem] p-8 w-full max-w-4xl shadow-2xl hidden max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black uppercase tracking-tighter">Library Management</h2>
                 <button onclick="closeModal()" class="text-gray-300 hover:text-red-500 text-2xl"><i class="fa-solid fa-circle-xmark"></i></button>
             </div>
-            <form id="bookForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <input type="text" id="newTitle" placeholder="Book Title" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
-                <input type="text" id="newAuthor" placeholder="Author Name" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
-                <input type="text" id="newLang" placeholder="Language" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="newGenre" placeholder="Genre (e.g. Thriller)" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500">
-                <select id="newStatus" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                    <option value="Unread">Status: Unread</option>
-                    <option value="Read">Status: Read</option>
-                </select>
-                <input type="number" id="newRating" placeholder="Rating (1-5)" min="1" max="5" class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="newLoc" placeholder="Location / Lent to..." class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2">
-                <textarea id="newComment" placeholder="Review / Comments..." class="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2 h-24"></textarea>
-                <button type="submit" id="submitBtn" class="md:col-span-2 bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 shadow-xl transition-all">POST TO DATABASE</button>
-            </form>
+
+            <div class="flex gap-2 mb-8 bg-gray-100 p-2 rounded-2xl">
+                <button onclick="switchAdminTab('find')" id="tabFind" class="admin-tab active flex-1 py-3 rounded-xl font-bold transition-all">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i>Find & Manage
+                </button>
+                <button onclick="switchAdminTab('add')" id="tabAdd" class="admin-tab flex-1 py-3 rounded-xl font-bold transition-all">
+                    <i class="fa-solid fa-plus mr-2"></i>Add New
+                </button>
+            </div>
+
+            <div id="contentFind" class="overflow-y-auto pr-2 custom-scroll flex-grow">
+                <div class="relative mb-6">
+                    <i class="fa-solid fa-search absolute left-4 top-4 text-gray-400"></i>
+                    <input type="text" id="adminSearchInput" oninput="applyAdminSearch()" class="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 outline-none border-2 border-transparent focus:border-blue-500" placeholder="Search to modify or delete...">
+                </div>
+                <div id="adminBookList" class="space-y-3">
+                    </div>
+            </div>
+
+            <div id="contentAdd" class="hidden overflow-y-auto pr-2 flex-grow">
+                <form id="bookForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" id="newTitle" placeholder="Book Title" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
+                    <input type="text" id="newAuthor" placeholder="Author Name" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold" required>
+                    <input type="text" id="newLang" placeholder="Language" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="newGenre" placeholder="Genre" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="newStatus" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                        <option value="Unread">Status: Unread</option>
+                        <option value="Read">Status: Read</option>
+                    </select>
+                    <input type="number" id="newRating" placeholder="Rating (1-5)" min="1" max="5" class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="newLoc" placeholder="Location / Lent to..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2">
+                    <textarea id="newComment" placeholder="Comments..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 md:col-span-2 h-24"></textarea>
+                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 shadow-xl">POST TO DATABASE</button>
+                    <button type="button" onclick="resetForm()" id="cancelEditBtn" class="hidden md:col-span-2 text-red-500 font-bold uppercase text-xs">Cancel Editing & Add New Instead</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNb6adZTCJeJrx1uCahjkREth8JWjTYjX1hzZWV-tbTvC4LFY-IDwlM3ozFm3RJjEIF7pdSYXQgq7j/pub?gid=0&single=true&output=csv'; 
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE_LTmqZ_kAC88qyVV5MPwz0S0oBTCi-uCyQk7vO4gC_xgcEN_VLZyQ3z6K85Kg9QXNg/exec';
-        const ADMIN_PASSWORD = '1234'; // Change this!
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxCqS-EGdINZnip7C0c3oKwWmAotXKQNA2sf_UGnyK1BkhSnbSYJwXuvNctT4Q3SeHlw/exec';
+        const ADMIN_PASSWORD = '1234';
 
         let libraryData = [];
+        let currentEditIndex = null;
 
-        // 1. Initialize App
-        window.onload = () => {
-            if(SHEET_CSV_URL.includes('YOUR_PUBLISHED')) {
-                document.getElementById('bookGrid').innerHTML = '<div class="col-span-full text-center font-bold text-red-500">⚠️ Setup Required: Add your Sheet CSV URL in the code.</div>';
-                return;
-            }
-            fetchData();
-        };
+        window.onload = fetchData;
 
         function fetchData() {
-    Papa.parse(SHEET_CSV_URL, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-            console.log("Data loaded:", results.data);
-            // Robust filter: checks for 'Title' regardless of extra spaces
-            libraryData = results.data.filter(row => {
-                const titleKey = Object.keys(row).find(k => k.trim() === 'Title');
-                return row[titleKey] && row[titleKey].trim() !== "";
+            Papa.parse(SHEET_CSV_URL, {
+                download: true, header: true, skipEmptyLines: true,
+                complete: function(results) {
+                    libraryData = results.data.filter(row => {
+                        const key = Object.keys(row).find(k => k.trim() === 'Title');
+                        return row[key] && row[key].trim() !== "";
+                    });
+                    populateFilters();
+                    renderBooks(libraryData);
+                    renderAdminList(libraryData);
+                }
             });
-
-            if (libraryData.length > 0) {
-                populateFilters();
-                renderBooks(libraryData);
-            } else {
-                document.getElementById('bookGrid').innerHTML = 
-                    `<div class="col-span-full text-center py-10 text-gray-500 font-bold">
-                        No data found. Check your Column Headers in the Sheet!
-                    </div>`;
-            }
-        },
-        error: function(err) {
-            console.error("PapaParse Error:", err);
-            document.getElementById('bookGrid').innerHTML = 
-                `<div class="col-span-full text-center py-10 text-red-500 font-bold">
-                    Failed to connect to Google Sheets. Verify your "Publish to Web" link and Sharing settings.
-                </div>`;
-        }
-    });
-}
-
-        function populateFilters() {
-            const getUnique = (key) => ['All', ...new Set(libraryData.map(b => b[key]).filter(v => v))];
-            const fill = (id, items) => {
-                const select = document.getElementById(id);
-                select.innerHTML = items.map(i => `<option value="${i === 'All' ? '' : i}">${i}</option>`).join('');
-            };
-            fill('langFilter', getUnique('Language'));
-            fill('genreFilter', getUnique('Genre'));
         }
 
         function renderBooks(books) {
@@ -190,14 +150,11 @@
                 return `
                     <div class="glass-card rounded-[2rem] p-7 flex flex-col relative overflow-hidden">
                         <div class="flex justify-between items-start mb-5">
-                            <span class="status-badge px-3 py-1 rounded-full uppercase ${isRead ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
-                                ${book.Status || 'Unread'}
-                            </span>
-                            <span class="text-[10px] font-black text-gray-300 uppercase tracking-tighter">${book.Language || ''}</span>
+                            <span class="status-badge px-3 py-1 rounded-full uppercase ${isRead ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${book.Status || 'Unread'}</span>
+                            <span class="text-[10px] font-black text-gray-300 uppercase">${book.Language || ''}</span>
                         </div>
                         <h3 class="font-black text-xl text-gray-800 leading-tight mb-1">${book.Title}</h3>
                         <p class="text-sm font-semibold text-gray-400 mb-6 italic">by ${book.Author || 'Unknown'}</p>
-                        
                         <div class="mt-auto">
                             <div class="flex items-center gap-2 text-xs font-bold text-red-500 bg-red-50 p-2 rounded-xl inline-flex mb-4">
                                 <i class="fa-solid fa-location-dot"></i> ${book.Location || 'Shelf'}
@@ -212,70 +169,144 @@
             }).join('');
         }
 
-        // 2. Filter Logic
-        function applyFilters() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const l = document.getElementById('langFilter').value;
-            const g = document.getElementById('genreFilter').value;
-            const s = document.getElementById('statusFilter').value;
-
-            const filtered = libraryData.filter(b => {
-                return (b.Title.toLowerCase().includes(q) || b.Author.toLowerCase().includes(q)) &&
-                       (!l || b.Language === l) &&
-                       (!g || b.Genre === g) &&
-                       (!s || b.Status === s);
-            });
-            renderBooks(filtered);
-        }
-
-        // 3. Admin / Login Logic
-        function openAdmin() { document.getElementById('adminModal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('adminModal').classList.add('hidden'); }
+        // --- ADMIN FUNCTIONS ---
 
         function verifyLogin() {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === ADMIN_PASSWORD) {
+            if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
                 document.getElementById('loginBox').classList.add('hidden');
-                document.getElementById('addBookBox').classList.remove('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else { alert("Incorrect Password!"); }
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('contentFind').classList.add('hidden');
+            document.getElementById('contentAdd').classList.add('hidden');
+
+            if (tab === 'find') {
+                document.getElementById('tabFind').classList.add('active');
+                document.getElementById('contentFind').classList.remove('hidden');
+                renderAdminList(libraryData);
             } else {
-                alert("Incorrect Password!");
+                document.getElementById('tabAdd').classList.add('active');
+                document.getElementById('contentAdd').classList.remove('hidden');
             }
         }
 
-        // 4. Submit to Google Sheets
+        function renderAdminList(books) {
+            const list = document.getElementById('adminBookList');
+            list.innerHTML = books.map((book, index) => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all group">
+                    <div>
+                        <p class="font-black text-gray-800 leading-none mb-1">${book.Title}</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">${book.Author}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="startModify(${index})" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-xl text-xs font-black uppercase hover:bg-blue-600 hover:text-white transition-all">Modify</button>
+                        <button onclick="handleDelete(${index})" class="bg-red-100 text-red-500 px-4 py-2 rounded-xl text-xs font-black uppercase hover:bg-red-500 hover:text-white transition-all">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyAdminSearch() {
+            const query = document.getElementById('adminSearchInput').value.toLowerCase();
+            const filtered = libraryData.filter(b => b.Title.toLowerCase().includes(query) || b.Author.toLowerCase().includes(query));
+            renderAdminList(filtered);
+        }
+
+        function startModify(index) {
+            const book = libraryData[index];
+            currentEditIndex = index;
+            
+            document.getElementById('newTitle').value = book.Title;
+            document.getElementById('newAuthor').value = book.Author;
+            document.getElementById('newLang').value = book.Language;
+            document.getElementById('newGenre').value = book.Genre;
+            document.getElementById('newStatus').value = book.Status;
+            document.getElementById('newRating').value = book.Rating;
+            document.getElementById('newLoc').value = book.Location;
+            document.getElementById('newComment').value = book.Comments;
+
+            document.getElementById('submitBtn').innerText = "UPDATE BOOK IN DATABASE";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            switchAdminTab('add');
+        }
+
+        function resetForm() {
+            currentEditIndex = null;
+            document.getElementById('bookForm').reset();
+            document.getElementById('submitBtn').innerText = "POST TO DATABASE";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function handleDelete(index) {
+            if (!confirm(`Are you sure you want to permanently delete "${libraryData[index].Title}"?`)) return;
+            
+            await submitToGS({ action: "delete", rowIndex: index });
+        }
+
         document.getElementById('bookForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "POSTING TO CLOUD...";
-            btn.disabled = true;
-
-            const newBook = {
+            const action = currentEditIndex !== null ? "edit" : "add";
+            
+            const payload = {
+                action: action,
+                rowIndex: currentEditIndex,
                 title: document.getElementById('newTitle').value,
                 author: document.getElementById('newAuthor').value,
                 language: document.getElementById('newLang').value,
                 genre: document.getElementById('newGenre').value,
-                type: "Book", 
-                publisher: "Added via Web",
+                type: "Book",
+                publisher: "Admin Panel",
                 status: document.getElementById('newStatus').value,
                 rating: document.getElementById('newRating').value,
                 comments: document.getElementById('newComment').value,
                 location: document.getElementById('newLoc').value
             };
 
+            await submitToGS(payload);
+        };
+
+        async function submitToGS(payload) {
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "SYNCHRONIZING...";
+            btn.disabled = true;
+
             try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Important for Apps Script
-                    body: JSON.stringify(newBook)
-                });
-                alert("Book added successfully!");
+                await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                alert("Cloud Sync Successful!");
                 location.reload();
             } catch (err) {
-                alert("Error connecting to Google Sheets.");
+                alert("Error connecting to database.");
                 btn.disabled = false;
-                btn.innerText = "POST TO DATABASE";
+                btn.innerText = originalText;
             }
-        };
+        }
+
+        // --- PUBLIC HELPERS ---
+        function populateFilters() {
+            const getUnique = (key) => ['All', ...new Set(libraryData.map(b => b[key]).filter(v => v))];
+            const fill = (id, items) => {
+                const select = document.getElementById(id);
+                select.innerHTML = items.map(i => `<option value="${i === 'All' ? '' : i}">${i}</option>`).join('');
+            };
+            fill('langFilter', getUnique('Language'));
+            fill('genreFilter', getUnique('Genre'));
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const l = document.getElementById('langFilter').value;
+            const g = document.getElementById('genreFilter').value;
+            const s = document.getElementById('statusFilter').value;
+            const filtered = libraryData.filter(b => (b.Title.toLowerCase().includes(q) || b.Author.toLowerCase().includes(q)) && (!l || b.Language === l) && (!g || b.Genre === g) && (!s || b.Status === s));
+            renderBooks(filtered);
+        }
+
+        function openAdmin() { document.getElementById('adminModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('adminModal').classList.add('hidden'); resetForm(); }
     </script>
 </body>
 </html>
