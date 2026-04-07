@@ -3,144 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ria's Digital Library | Admin Pro</title>
+    <title>Ria's Library Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%); min-height: 100vh; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
-        .glass-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.85); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .book-cover { height: 260px; width: 100%; object-fit: cover; }
-        .status-badge { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.05em; }
-        .admin-tab.active { background: #2563eb; color: white; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        /* Friendly, rounded font to keep the playful vibe */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;900&display=swap');
+        
+        body { 
+            background: #FDF8F5; /* Warm parchment paper */
+            min-height: 100vh; 
+            font-family: 'Quicksand', sans-serif; 
+            overflow-x: hidden;
+            color: #3D405B; /* Deep, readable navy/charcoal */
+        }
+
+        /* Cozy Archive Banner */
+        .manager-banner {
+            background-image: linear-gradient(rgba(61, 64, 91, 0.3), rgba(61, 64, 91, 0.5)), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=2000'); 
+            background-size: cover;
+            background-position: center 40%;
+            height: 350px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0 8%;
+            border-bottom: 12px solid #D4A373; /* Chunky warm wood border */
+            border-radius: 0 0 2.5rem 2.5rem; 
+            box-shadow: 0 10px 25px rgba(212, 163, 115, 0.3);
+        }
+
+        .header-text h1 {
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: #FFFFFF;
+            text-shadow: 
+                -2px -2px 0 #E07A5F,  
+                 2px -2px 0 #E07A5F,
+                -2px  2px 0 #E07A5F,
+                 2px  2px 0 #E07A5F,
+                 4px  4px 0 #3D405B;
+            line-height: 1.1;
+            letter-spacing: 1.5px;
+        }
+
+        .header-text p {
+            color: #E07A5F;
+            background: #FDF8F5;
+            padding: 6px 20px;
+            border-radius: 8px; /* Slightly squarer for an "index card" look */
+            display: inline-block;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border: 3px solid #D4A373;
+            box-shadow: 2px 2px 0 #D4A373;
+        }
+
+        /* Playful Management Pill */
+        .floating-counter {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3D405B;
+            color: #FDF8F5;
+            padding: 10px 35px;
+            border-radius: 12px;
+            font-weight: 800;
+            border: 4px solid #D4A373;
+            box-shadow: 0 8px 15px rgba(61, 64, 91, 0.2);
+            z-index: 20;
+            font-size: 1rem;
+        }
+
+        /* "Index Card" Styling for Books */
+        .cute-card { 
+            background: #FFFFFF; 
+            border: 4px solid #F4E1D2; 
+            border-radius: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 20px rgba(212, 163, 115, 0.1);
+        }
+
+        .cute-card:hover { 
+            transform: translateY(-8px); 
+            border-color: #D4A373;
+            box-shadow: 0 15px 30px rgba(224, 122, 95, 0.2); 
+        }
+        
+        .book-cover { height: 260px; width: 100%; object-fit: cover; border-radius: 1.2rem 1.2rem 0 0; border-bottom: 4px solid #F4E1D2; }
+        .status-badge { font-size: 0.7rem; font-weight: 900; letter-spacing: 0.05em; border-radius: 8px; padding: 6px 12px; }
+        
+        /* Playful Inputs (Looking like forms/ledgers) */
+        .cute-input {
+            background: #FFFFFF;
+            border: 3px solid #F4E1D2;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .cute-input:focus { border-color: #E07A5F; outline: none; box-shadow: 0 0 0 4px rgba(224, 122, 95, 0.15); }
+        
+        /* Admin Tabs styled like folder tabs */
+        .admin-tab { color: #D4A373; background: #FDF8F5; border: 3px solid #F4E1D2; border-bottom: none; border-radius: 16px 16px 0 0; }
+        .admin-tab.active { background: #E07A5F; color: white; border-color: #E07A5F; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 8px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #D4A373; border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body>
 
-    <header class="max-w-7xl mx-auto flex justify-between items-center mb-10 bg-[#2563eb] p-5 rounded-[2rem] shadow-2xl text-white">
-        <div class="flex items-center gap-4">
-            <div class="bg-white/20 p-3 rounded-2xl"><i class="fa-solid fa-book-open-reader text-2xl"></i></div>
-            <div>
-                <h1 class="text-xl font-black tracking-tighter uppercase text-white">Ria's Library</h1>
-                <p class="text-[10px] opacity-70 font-bold uppercase tracking-widest text-white">Personal Archive</p>
-            </div>
+    <header class="manager-banner">
+        <div class="header-text">
+            <h1>Ria's Library</h1>
+            <p><i class="fa-solid fa-boxes-stacked mr-2"></i> Archive Manager</p>
         </div>
-        <div class="flex items-center gap-4">
-            <span id="bookCount" class="hidden md:block bg-black/20 px-4 py-2 rounded-full text-xs font-bold border border-white/20 text-white">Loading...</span>
-            <button onclick="openAdmin()" class="group relative">
-                <img src="https://ui-avatars.com/api/?name=Debayan+Ganguly&background=fff&color=2563eb" class="w-12 h-12 rounded-2xl border-2 border-white shadow-lg group-hover:rotate-6 transition-transform">
-                <div class="absolute -top-1 -right-1 bg-green-400 w-4 h-4 rounded-full border-2 border-blue-600"></div>
+
+        <div class="absolute top-8 right-8">
+            <button onclick="openAdmin()" class="relative group">
+                <img src="https://ui-avatars.com/api/?name=Ria&background=E07A5F&color=FFF" class="w-16 h-16 rounded-xl border-4 border-white shadow-lg group-hover:-translate-y-1 transition-transform">
+                <div class="absolute -top-2 -right-2 bg-[#81B29A] w-6 h-6 rounded-full border-4 border-white flex items-center justify-center text-[10px] text-white font-bold"><i class="fa-solid fa-check"></i></div>
             </button>
+        </div>
+
+        <div id="bookCount" class="floating-counter uppercase tracking-widest">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading...
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto">
-        <div class="glass-card rounded-[2.5rem] p-8 mb-12 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+    <main class="max-w-7xl mx-auto px-4 md:px-10 mt-16">
+        
+        <div class="bg-white rounded-3xl p-8 mb-12 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-4 border-[#F4E1D2]">
             <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Quick Search</label>
-                <input type="text" id="searchInput" oninput="applyFilters()" class="w-full px-4 py-3 rounded-2xl bg-white/50 border-none outline-none focus:ring-2 focus:ring-blue-500" placeholder="Title, author...">
+                <label class="text-[11px] font-black text-[#E07A5F] uppercase tracking-widest mb-2 block"><i class="fa-solid fa-clipboard-list mr-1"></i> Catalog Search</label>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#D4A373]"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" class="w-full pl-10 pr-4 py-3 cute-input font-bold text-[#3D405B]" placeholder="Title or author...">
+                </div>
             </div>
             <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Language</label>
-                <select id="langFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none"></select>
+                <label class="text-[11px] font-black text-[#E07A5F] uppercase tracking-widest mb-2 block">Language</label>
+                <select id="langFilter" onchange="applyFilters()" class="w-full p-3 cute-input font-bold text-[#3D405B]"></select>
             </div>
             <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Genre</label>
-                <select id="genreFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none"></select>
+                <label class="text-[11px] font-black text-[#E07A5F] uppercase tracking-widest mb-2 block">Genre Category</label>
+                <select id="genreFilter" onchange="applyFilters()" class="w-full p-3 cute-input font-bold text-[#3D405B]"></select>
             </div>
             <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Status</label>
-                <select id="statusFilter" onchange="applyFilters()" class="w-full p-3 rounded-2xl bg-white/50 outline-none">
-                    <option value="">All Books</option>
-                    <option value="Read">Read</option>
-                    <option value="Unread">Unread</option>
-                    <option value="In Progress">In Progress</option>
+                <label class="text-[11px] font-black text-[#E07A5F] uppercase tracking-widest mb-2 block">Reading Status</label>
+                <select id="statusFilter" onchange="applyFilters()" class="w-full p-3 cute-input font-bold text-[#3D405B]">
+                    <option value="">Full Catalog</option>
+                    <option value="Read">Completed</option>
+                    <option value="Unread">Pending (To Read)</option>
+                    <option value="In Progress">Currently Active</option>
                 </select>
             </div>
         </div>
 
-        <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-20"></div>
     </main>
 
-    <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6 z-[100]">
+    <div id="adminModal" class="fixed inset-0 bg-[#3D405B]/80 backdrop-blur-sm hidden flex items-center justify-center p-6 z-[100]">
         
-        <div id="loginBox" class="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl text-center">
-            <h2 class="text-2xl font-black mb-6 uppercase">Admin Access</h2>
-            <input type="password" id="adminPass" placeholder="Password" class="w-full p-4 rounded-2xl border-2 border-gray-100 mb-4 outline-none text-center font-bold tracking-widest">
-            <button onclick="verifyLogin()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg">LOGIN</button>
-            <button onclick="closeModal()" class="mt-4 text-gray-400 text-xs font-bold uppercase">Cancel</button>
+        <div id="loginBox" class="bg-[#FDF8F5] rounded-[2rem] p-12 w-full max-w-md shadow-2xl text-center border-8 border-[#D4A373]">
+            <div class="bg-[#E07A5F] w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+                <i class="fa-solid fa-lock text-3xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-black mb-8 uppercase tracking-tighter text-[#3D405B]">System Access</h2>
+            <input type="password" id="adminPass" placeholder="PIN CODE" class="w-full p-4 cute-input mb-6 text-center text-2xl tracking-widest font-bold text-[#3D405B]">
+            <button onclick="verifyLogin()" class="w-full bg-[#E07A5F] hover:bg-[#D26447] text-white font-black py-4 rounded-xl shadow-[0_6px_0_#C2583B] hover:shadow-[0_2px_0_#C2583B] hover:translate-y-1 transition-all text-lg">ACCESS DATABASE</button>
+            <button onclick="closeModal()" class="mt-8 text-[#81B29A] font-bold uppercase text-sm hover:text-[#3D405B]"><i class="fa-solid fa-arrow-left mr-1"></i> Return to Library</button>
         </div>
 
-        <div id="adminDashboard" class="bg-white rounded-[2.5rem] p-8 w-full max-w-4xl shadow-2xl hidden max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-black uppercase">Library Management</h2>
-                <button onclick="closeModal()" class="text-gray-300 hover:text-red-500 text-2xl"><i class="fa-solid fa-circle-xmark"></i></button>
+        <div id="adminDashboard" class="bg-[#FDF8F5] rounded-[2rem] p-8 w-full max-w-5xl shadow-2xl hidden max-h-[90vh] flex flex-col border-8 border-[#D4A373]">
+            <div class="flex justify-between items-center mb-6 border-b-4 border-[#F4E1D2] pb-4">
+                <h2 class="text-2xl font-black uppercase tracking-tighter text-[#3D405B]"><i class="fa-solid fa-box-archive mr-2 text-[#E07A5F]"></i> Master Catalog Manager</h2>
+                <button onclick="closeModal()" class="text-[#D4A373] hover:text-[#E07A5F] text-3xl transition-colors"><i class="fa-solid fa-square-xmark"></i></button>
             </div>
 
-            <div class="flex gap-2 mb-8 bg-gray-100 p-2 rounded-2xl">
-                <button onclick="switchAdminTab('find')" id="tabFind" class="admin-tab active flex-1 py-3 rounded-xl font-bold">Find Book</button>
-                <button onclick="switchAdminTab('add')" id="tabAdd" class="admin-tab flex-1 py-3 rounded-xl font-bold">Add New</button>
+            <div class="flex gap-2 mb-6 px-2">
+                <button onclick="switchAdminTab('find')" id="tabFind" class="admin-tab active flex-1 py-3 font-black text-lg transition-all"><i class="fa-solid fa-magnifying-glass mr-2"></i> Inspect Records</button>
+                <button onclick="switchAdminTab('add')" id="tabAdd" class="admin-tab flex-1 py-3 font-black text-lg transition-all"><i class="fa-solid fa-file-circle-plus mr-2"></i> Create Record</button>
             </div>
 
-            <div id="contentFind" class="overflow-y-auto pr-2 custom-scroll flex-grow">
-                <input type="text" id="adminSearchInput" oninput="applyAdminSearch()" class="w-full px-4 py-4 mb-4 rounded-2xl bg-gray-50 outline-none border-2 border-transparent focus:border-blue-500" placeholder="Search title or author to modify/delete...">
-                <div id="adminBookList" class="space-y-3"></div>
+            <div id="contentFind" class="overflow-y-auto pr-3 custom-scroll flex-grow bg-white p-6 rounded-b-2xl rounded-tr-2xl border-4 border-[#F4E1D2] -mt-7">
+                <div class="relative mb-6">
+                    <i class="fa-solid fa-filter absolute left-4 top-1/2 -translate-y-1/2 text-[#D4A373]"></i>
+                    <input type="text" id="adminSearchInput" oninput="applyAdminSearch()" class="w-full pl-12 pr-4 py-4 cute-input font-bold text-[#3D405B]" placeholder="Filter records by title or author...">
+                </div>
+                <div id="adminBookList" class="space-y-4"></div>
             </div>
 
-            <div id="contentAdd" class="hidden overflow-y-auto pr-2 custom-scroll flex-grow">
+            <div id="contentAdd" class="hidden overflow-y-auto pr-3 custom-scroll flex-grow bg-white p-6 rounded-b-2xl rounded-tl-2xl border-4 border-[#F4E1D2] -mt-7">
                 <form id="bookForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <input type="text" id="newTitle" placeholder="Book Title" class="w-full p-4 rounded-2xl bg-gray-50 outline-none border border-transparent focus:border-blue-500 font-bold" required>
-                    <input type="text" id="newAuthor" placeholder="Author Name" class="w-full p-4 rounded-2xl bg-gray-50 outline-none border border-transparent focus:border-blue-500 font-bold" required>
+                    <div>
+                        <label class="text-[10px] font-black text-[#81B29A] uppercase tracking-widest block mb-1">Title</label>
+                        <input type="text" id="newTitle" placeholder="Enter book title" class="w-full p-4 cute-input font-bold text-[#3D405B]" required>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-[#81B29A] uppercase tracking-widest block mb-1">Author</label>
+                        <input type="text" id="newAuthor" placeholder="Enter author name" class="w-full p-4 cute-input font-bold text-[#3D405B]" required>
+                    </div>
                     
-                    <select id="newLang" class="w-full p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="" disabled selected>Language</option>
+                    <select id="newLang" class="w-full p-4 cute-input font-bold text-[#3D405B]">
                         <option value="Bengali">Bengali</option><option value="English">English</option><option value="Hindi">Hindi</option>
                     </select>
 
-                    <select id="newType" class="w-full p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="" disabled selected>Type</option>
-                        <option value="Novel / Collection">Novel / Collection</option>
-                        <option value="Story / Collection">Story / Collection</option>
-                        <option value="Poetry">Poetry</option>
-                        <option value="Magazine">Magazine</option>
-                        <option value="Textbook">Textbook</option>
-                        <option value="Comic / Graphic Novel">Comic / Graphic Novel</option>
-                        <option value="Drama">Drama</option>
-                        <option value="Religious / Mythology">Religious / Mythology</option>
+                    <select id="newType" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                        <option value="Novel / Collection">Novel / Collection</option><option value="Story / Collection">Story / Collection</option>
+                        <option value="Poetry">Poetry</option><option value="Magazine">Magazine</option><option value="Textbook">Textbook</option>
+                        <option value="Comic / Graphic Novel">Comic / Graphic Novel</option><option value="Drama">Drama</option><option value="Religious / Mythology">Religious / Mythology</option>
                     </select>
 
-                    <select id="newGenre" class="w-full p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="" disabled selected>Genre</option>
-                        <option value="Romance">Romance</option><option value="Fantasy">Fantasy</option><option value="Mystery / Thriller">Mystery / Thriller</option><option value="Horror / Paranormal">Horror / Paranormal</option><option value="Science Fiction">Science Fiction</option><option value="Historical Fiction">Historical Fiction</option><option value="Comedy">Comedy</option><option value="Classics">Classics</option><option value="Education">Education</option><option value="Others">Others</option>
+                    <select id="newGenre" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                        <option value="Romance">Romance</option><option value="Fantasy">Fantasy</option><option value="Mystery / Thriller">Mystery / Thriller</option>
+                        <option value="Horror / Paranormal">Horror / Paranormal</option><option value="Science Fiction">Science Fiction</option>
+                        <option value="Historical Fiction">Historical Fiction</option><option value="Comedy">Comedy</option>
+                        <option value="Classics">Classics</option><option value="Education">Education</option><option value="Others">Others</option>
                     </select>
 
-                    <select id="newPublisher" class="w-full p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="" disabled selected>Publisher</option>
-                        <option value="Ananda">Ananda</option><option value="Patra Bharati">Patra Bharati</option><option value="Deb Shatiyta Kutir">Deb Shatiyta Kutir</option><option value="Deys Publishing">Deys Publishing</option><option value="Mitra and Ghosh">Mitra and Ghosh</option><option value="Biva">Biva</option><option value="Book Farm">Book Farm</option><option value="Book Look">Book Look</option><option value="Cafe Table">Cafe Table</option><option value="Briti">Briti</option><option value="Deep Prakashan">Deep Prakashan</option><option value="Sahitya Academy">Sahitya Academy</option><option value="Abhijan Publishers">Abhijan Publishers</option><option value="Kalpabiswa">Kalpabiswa</option><option value="Antareep">Antareep</option><option value="Boibhashik">Boibhashik</option><option value="Shopizen Bangla">Shopizen Bangla</option><option value="Sayantan Publishers">Sayantan Publishers</option><option value="Smells of Book">Smells of Book</option><option value="Rupa">Rupa</option><option value="Penguin">Penguin</option><option value="Latika">Latika</option><option value="Narayan">Narayan</option><option value="Patit Paban">Patit Paban</option><option value="Aranyamon">Aranyamon</option><option value="Others">Others</option>
+                    <select id="newPublisher" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                        <option value="Ananda">Ananda</option><option value="Patra Bharati">Patra Bharati</option><option value="Deys Publishing">Deys Publishing</option>
+                        <option value="Rupa">Rupa</option><option value="Penguin">Penguin</option><option value="Others">Others</option>
                     </select>
 
-                    <select id="newStatus" class="w-full p-4 rounded-2xl bg-gray-50 outline-none font-bold">
-                        <option value="Read">Read</option><option value="Unread">Unread</option><option value="In Progress">In Progress</option>
+                    <select id="newStatus" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                        <option value="Read">Completed</option><option value="Unread">Pending</option><option value="In Progress">Active</option>
                     </select>
-                    <input type="number" id="newRating" placeholder="Rating (1-5)" min="1" max="5" class="w-full p-4 rounded-2xl bg-gray-50 outline-none">
-                    <input type="text" id="newLoc" placeholder="Location" class="w-full p-4 rounded-2xl bg-gray-50 outline-none">
-                    <input type="text" id="newCover" placeholder="Cover Image Link" class="w-full p-4 rounded-2xl bg-gray-50 outline-none">
-                    <textarea id="newComment" placeholder="Comments..." class="w-full p-4 rounded-2xl bg-gray-50 outline-none md:col-span-2 h-20"></textarea>
                     
-                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl">SAVE TO DATABASE</button>
-                    <button type="button" onclick="resetForm()" id="cancelEditBtn" class="hidden md:col-span-2 text-red-500 font-bold uppercase text-xs">Exit Edit Mode</button>
+                    <input type="number" id="newRating" placeholder="Rating (1-5)" min="1" max="5" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                    <input type="text" id="newLoc" placeholder="Shelf / Location ID" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                    <input type="text" id="newCover" placeholder="Cover Image URL (Drive/Web)" class="w-full p-4 cute-input font-bold text-[#3D405B]">
+                    <textarea id="newComment" placeholder="Archivist Notes / Review..." class="w-full p-4 cute-input md:col-span-2 h-20 font-bold text-[#3D405B]"></textarea>
+                    
+                    <button type="submit" id="submitBtn" class="md:col-span-2 bg-[#E07A5F] hover:bg-[#D26447] text-white font-black py-4 rounded-xl shadow-[0_5px_0_#C2583B] hover:shadow-[0_2px_0_#C2583B] hover:translate-y-1 transition-all text-lg"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> LOG RECORD TO DATABASE</button>
+                    <button type="button" onclick="resetForm()" id="cancelEditBtn" class="hidden md:col-span-2 text-[#3D405B] font-bold uppercase text-xs hover:text-[#E07A5F]">Cancel Modification</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        // UPDATE THESE TWO LINKS
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNb6adZTCJeJrx1uCahjkREth8JWjTYjX1hzZWV-tbTvC4LFY-IDwlM3ozFm3RJjEIF7pdSYXQgq7j/pub?gid=0&single=true&output=csv'; 
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkw_IlBKfL1jIKkRguZ0mPw9Kn_FNX_onCWiPsUCpBCKOUilUIu_ZCnlFlFZGxDL5cqQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxCqS-EGdINZnip7C0c3oKwWmAotXKQNA2sf_UGnyK1BkhSnbSYJwXuvNctT4Q3SeHlw/exec';
         const ADMIN_PASSWORD = '1234';
 
         let libraryData = [];
@@ -149,7 +259,7 @@
         window.onload = fetchData;
 
         function fixImageUrl(url) {
-            if (!url) return 'https://via.placeholder.com/300x450?text=No+Cover';
+            if (!url) return 'https://via.placeholder.com/300x450/FDF8F5/D4A373?text=No+Cover';
             if (url.includes('drive.google.com')) {
                 const id = url.split('/d/')[1]?.split('/')[0];
                 return `https://docs.google.com/uc?id=${id}&export=download`;
@@ -171,31 +281,39 @@
 
         function renderBooks(books) {
             const grid = document.getElementById('bookGrid');
-            document.getElementById('bookCount').innerText = `${books.length} Books`;
+            document.getElementById('bookCount').innerHTML = `<i class="fa-solid fa-layer-group mr-2"></i> ${books.length} Records Found`;
             grid.innerHTML = books.map(book => {
-                const isRead = book.Status === 'Read';
-                const isInProgress = book.Status === 'In Progress';
-                const stars = '★'.repeat(Number(book.Rating) || 0) + '☆'.repeat(5 - (Number(book.Rating) || 0));
+                const stars = '⭐'.repeat(Number(book.Rating) || 0);
                 
-                let badgeClass = 'bg-orange-100 text-orange-600';
-                if (isRead) badgeClass = 'bg-green-100 text-green-600';
-                if (isInProgress) badgeClass = 'bg-blue-100 text-blue-600';
+                // Archival Theme Badges
+                let badgeClass = 'bg-[#F2CC8F] text-[#916B27] border-2 border-[#E3B976]'; // Unread - Yellow Card
+                let statusText = 'Pending';
+                if (book.Status === 'Read') {
+                    badgeClass = 'bg-[#81B29A] text-[#1E4D36] border-2 border-[#6B9E85]'; // Read - Sage Green Card
+                    statusText = 'Completed';
+                }
+                if (book.Status === 'In Progress') {
+                    badgeClass = 'bg-[#A8DADC] text-[#296568] border-2 border-[#8ACACD]'; // Reading - Soft Blue Card
+                    statusText = 'Active';
+                }
 
                 return `
-                    <div class="glass-card rounded-[2rem] flex flex-col relative overflow-hidden">
-                        <img src="${fixImageUrl(book.CoverImage)}" class="book-cover" alt="${book.Title}">
-                        <div class="p-6 flex flex-col flex-grow">
+                    <div class="cute-card flex flex-col relative overflow-hidden group">
+                        <img src="${fixImageUrl(book.CoverImage)}" class="book-cover group-hover:opacity-90 transition-opacity" alt="${book.Title}">
+                        <div class="p-5 flex flex-col flex-grow bg-white">
                             <div class="flex justify-between items-start mb-3">
-                                <span class="status-badge px-3 py-1 rounded-full uppercase ${badgeClass}">${book.Status}</span>
-                                <span class="text-[10px] font-black text-gray-400 uppercase">${book.Language}</span>
+                                <span class="status-badge ${badgeClass}">${statusText}</span>
+                                <span class="text-[10px] font-black text-[#E07A5F] uppercase border-2 border-[#F4E1D2] px-2 py-1 rounded-md bg-[#FDF8F5]">${book.Language}</span>
                             </div>
-                            <h3 class="font-black text-lg text-gray-800 leading-tight mb-1">${book.Title}</h3>
-                            <p class="text-xs font-semibold text-gray-400 mb-4 italic">by ${book.Author}</p>
+                            <h3 class="font-black text-xl text-[#3D405B] leading-tight mb-1">${book.Title}</h3>
+                            <p class="text-xs font-bold text-[#D4A373] mb-4"><i class="fa-solid fa-feather-pointed mr-1"></i> ${book.Author}</p>
                             <div class="mt-auto">
-                                <p class="text-[10px] text-red-500 font-bold mb-3"><i class="fa-solid fa-location-dot"></i> ${book.Location || 'Shelf'}</p>
-                                <div class="flex justify-between border-t pt-3 items-center">
-                                    <span class="text-yellow-400 text-xs">${stars}</span>
-                                    <span class="text-[9px] font-bold text-gray-400 uppercase">${book.Genre}</span>
+                                <div class="flex items-center gap-2 text-xs font-bold text-[#3D405B] bg-[#FDF8F5] border-2 border-[#F4E1D2] px-3 py-2 rounded-lg mb-4 w-full">
+                                    <i class="fa-solid fa-map-location-dot text-[#E07A5F]"></i> ${book.Location || 'General Circulation'}
+                                </div>
+                                <div class="flex justify-between border-t-2 border-dashed border-[#F4E1D2] pt-3 items-center">
+                                    <span class="text-sm">${stars}</span>
+                                    <span class="text-[9px] font-black text-[#81B29A] uppercase tracking-widest"><i class="fa-solid fa-tag mr-1"></i> ${book.Genre}</span>
                                 </div>
                             </div>
                         </div>
@@ -204,12 +322,12 @@
             }).join('');
         }
 
-        // --- ADMIN ---
+        // --- ADMIN DASHBOARD LOGIC ---
         function verifyLogin() {
             if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
                 document.getElementById('loginBox').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
-            } else { alert("Wrong Password"); }
+            } else { alert("Authentication Failed."); }
         }
 
         function switchAdminTab(tab) {
@@ -227,14 +345,14 @@
 
         function renderAdminList(books) {
             document.getElementById('adminBookList').innerHTML = books.map((book, index) => `
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                <div class="flex items-center justify-between p-4 bg-[#FDF8F5] rounded-xl border-2 border-[#F4E1D2] hover:border-[#D4A373] transition-colors">
                     <div class="text-left">
-                        <p class="font-black text-gray-800 text-sm leading-tight">${book.Title}</p>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase">${book.Author}</p>
+                        <p class="font-black text-[#3D405B] text-md leading-tight">${book.Title}</p>
+                        <p class="text-[11px] font-bold text-[#D4A373] uppercase tracking-widest mt-1"><i class="fa-solid fa-barcode mr-1"></i> ${book.Author}</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="startModify(${index})" class="bg-blue-100 text-blue-600 px-3 py-2 rounded-xl text-[10px] font-black uppercase">Modify</button>
-                        <button onclick="handleDelete(${index})" class="bg-red-100 text-red-500 px-3 py-2 rounded-xl text-[10px] font-black uppercase">Delete</button>
+                        <button onclick="startModify(${index})" class="bg-[#81B29A] text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-[#6B9E85] transition-colors"><i class="fa-solid fa-pen-to-square"></i> Modify</button>
+                        <button onclick="handleDelete(${index})" class="bg-[#E07A5F] text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-[#D26447] transition-colors"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -260,7 +378,7 @@
             document.getElementById('newLoc').value = book.Location;
             document.getElementById('newComment').value = book.Comments;
             document.getElementById('newCover').value = book.CoverImage;
-            document.getElementById('submitBtn').innerText = "UPDATE BOOK";
+            document.getElementById('submitBtn').innerHTML = "<i class='fa-solid fa-file-pen mr-2'></i> UPDATE RECORD";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             switchAdminTab('add');
         }
@@ -268,12 +386,12 @@
         function resetForm() {
             currentEditIndex = null;
             document.getElementById('bookForm').reset();
-            document.getElementById('submitBtn').innerText = "SAVE TO DATABASE";
+            document.getElementById('submitBtn').innerHTML = "<i class='fa-solid fa-cloud-arrow-up mr-2'></i> LOG RECORD TO DATABASE";
             document.getElementById('cancelEditBtn').classList.add('hidden');
         }
 
         async function handleDelete(index) {
-            if (confirm("Delete this book?")) await submitToGS({ action: "delete", rowIndex: index });
+            if (confirm(`Expunge "${libraryData[index].Title}" from the archives?`)) await submitToGS({ action: "delete", rowIndex: index });
         }
 
         document.getElementById('bookForm').onsubmit = async (e) => {
@@ -298,12 +416,12 @@
 
         async function submitToGS(payload) {
             const btn = document.getElementById('submitBtn');
-            btn.innerText = "Syncing...";
+            btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin mr-2'></i> Transmitting...";
             btn.disabled = true;
             try {
                 await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 location.reload();
-            } catch (err) { alert("Sync Error"); btn.disabled = false; }
+            } catch (err) { alert("Transmission Error"); btn.disabled = false; }
         }
 
         function populateFilters() {
